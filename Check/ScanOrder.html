@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title></title>
+	<link href="../css/mui.min.css" rel="stylesheet" />
+	<link href="../css/style.css" rel="stylesheet" />
+</head>
+
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<h1 class="mui-title">SMT入库</h1>
+	</header>
+	<div class="mui-content">
+		<div>交接单：</div>
+		<div id='login-form' class="mui-input-group">
+			<div class="mui-input-row row">
+				<!-- class="mui-input-clear BarCode"  输入居中效果 -->
+				<input id='Receipt' type="text" placeholder="请扫描交接单" autofocus="true">
+			</div>
+		</div>
+		<div>库位编号：</div>
+		<div id='login-form' class="mui-input-group">
+			<div class="mui-input-row row">
+				<input id='Location' type="text" placeholder="请扫描交接单" autofocus="true">
+			</div>
+		</div>
+		<div>绑库人工号：</div>
+		<div id='login-form' class="mui-input-group">
+			<div class="mui-input-row row">
+				<input id='UserName' type="text" placeholder="请扫描工号" autofocus="true">
+			</div>
+		</div>
+		<div class="mui-content-padded">
+			<button id='btnBack' type="button" class="mui-btn mui-btn-block mui-btn-primary">返回主页</button>
+		</div>
+	</div>
+	<header class="mui-bar stabar" id="btnUserInfo">
+
+	</header>
+	<script src="../js/mui.min.js"></script>
+	<script type="text/javascript" src="../js/jquery-1.11.1.js"></script>
+	<script type="text/javascript" src="../js/moment.min.js"></script>
+	<script type="text/javascript" src="../js/git.mes.common.js"></script>
+	<script type="text/javascript" src="../js/git.mes.key.js"></script>
+	<script type="text/javascript">
+
+		//退回到主页
+		$("#btnBack").click(function () {
+			window.location.href = "../main.html";
+		});
+		$('#Receipt').bind('keypress', function (event) {
+			if (event.keyCode == "13") {
+				document.getElementById("Location").focus();
+			}
+		});
+		$('#Location').bind('keypress', function (event) {
+			if (event.keyCode == "13") {
+				document.getElementById("UserName").focus();
+			}
+		});
+		$("#UserName").bind('keypress', function (event) {
+			if (event.keyCode == "13") {
+			var Receipt = $("#Receipt").val();
+			var Location = $("#Location").val();
+			var UserName = $("#UserName").val();
+			if (Receipt != "" && Location != "" && UserName != "") {
+				$.ajax({
+					
+					url: "http://192.168.50.122:8080/api/insertpcba?",
+					type: 'GET',
+					contentType: "application/json;charset=utf-8",
+					async: true,
+					data: {
+						"Lot": Receipt,
+						"Location": Location,
+						"UserName": UserName
+					},
+					timeout: 3000,
+					dataType: 'json',
+					success: function (date) {
+						console.log(date);
+						for (var msg in date) {
+							if(msg == "msg"){
+								alert(date[msg]);
+							}
+						}
+						location.reload();
+					},
+					error: function (date) {
+						console.log(date);
+						alert("系统异常!");
+					},
+				});
+				}else{
+					alert("信息不全!");
+				}
+			}
+			});
+
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title></title>
+	<link href="css/mui.min.css" rel="stylesheet" />
+	<link href="css/style.css" rel="stylesheet" />
+</head>
+<style type="text/css">
+	#overall {
+		height: 95px;
+	}
+
+	#smtsending {
+		height: 95px;
+	}
+
+	#cobwarehouse {
+		height: 95px;
+	}
+
+	#cobsending {
+		height: 95px;
+	}
+
+	#miwarehouse {
+		height: 95px;
+	}
+
+	#misending {
+		height: 95px;
+	}
+
+	#casingwarehouse {
+		height: 95px;
+	}
+
+	#casingsending {
+		height: 95px;
+	}
+
+	#exit {
+		height: 95px;
+	}
+</style>
+
+<body onload="init()">
+	<header class="mui-bar mui-bar-nav">
+		<h1 class="mui-title" id="theme">MiCasing功能</h1>
+		<img src='favicon.png' width="50" height="46" alt=''>
+	</header>
+	<div class="mui-content-padded">
+		<ul id="iconlist" class="mui-table-view mui-grid-view">
+		    <li class="mui-table-view-cell mui-col-xs-3 mui-col-sm-2 iconlist clip" id="overall">
+				<a href=RX/SmtReceive.html>
+					<span style="width: 50px;"><img src="入库.png" width="50" height="50" alt=""></span>
+					<div class="mui-media-body" id="module1">Mi收料</div>
+				</a>
+			</li>
+			<li class="mui-table-view-cell mui-col-xs-3 mui-col-sm-2 iconlist clip" id="overall">
+				<a href=storage/101PutInStorage.html>
+					<span style="width: 50px;"><img src="101入库.png" width="50" height="50" alt=""></span>
+					<div class="mui-media-body" id="module2">Mi101入库</div>
+				</a>
+			</li>
+			<li class="mui-table-view-cell mui-col-xs-3 mui-col-sm-2 iconlist clip" id="overall">
+				<a href=Send/SmtSending.html> 
+					<span style="width: 50px;"><img src="出库.png" width="50" height="50" alt=""></span>
+					<div class="mui-media-body" id="module3">Mi发料</div>
+				</a>
+			</li>
+			<li class="mui-table-view-cell mui-col-xs-3 mui-col-sm-2 iconlist clip" id="overall">
+				<a href=RX/CasingReceive.html> 
+					<span style="width: 50px;"><img src="入库.png" width="50" height="50" alt=""></span>
+					<div class="mui-media-body" id="module4">Casing收料</div>
+				</a>
+			</li>
+			<li class="mui-table-view-cell mui-col-xs-3 mui-col-sm-2 iconlist clip" id="overall">
+				<a href=InventoryTakeDown/InventoryTakeDown.html> 
+					<span style="width: 50px;"><img src="入库.png" width="50" height="50" alt=""></span>
+					<div class="mui-media-body" id="module4">PCBA下架</div>
+				</a>
+			</li>
+			<li class="mui-table-view-cell mui-col-xs-3 mui-col-sm-2 iconlist clip" id="overall">
+				<a href=login.html>
+					<span style="width: 50px;"><img src="退出系统.png" width="50" height="50" alt=""></span>
+					<div class="mui-media-body" id="module5">退出系统</div>
+				</a>
+			</li>
+			<!--<li class="mui-table-view-cell mui-col-xs-3 mui-col-sm-2 iconlist clip" id="miwarehouse">
+				<a href=ProcNum/ScanOrder.html>
+					<span style="width: 50px;"><img src="入库.png" width="50" height="50" alt=""></span>
+					<div class="mui-media-body">MI收料</div>
+				</a>
+			</li>
+			<li class="mui-table-view-cell mui-col-xs-3 mui-col-sm-2 iconlist clip" id="misending">
+				<a href=ProcNum/ScanOrder.html>
+					<span style="width: 50px;"><img src="出库.png" width="50" height="50" alt=""></span>
+					<div class="mui-media-body">MI发料</div>
+				</a>
+			</li>
+			<li class="mui-table-view-cell mui-col-xs-3 mui-col-sm-2 iconlist clip" id="casingwarehouse">
+				<a href=ProcNum/ScanOrder.html>
+					<span style="width: 50px;"><img src="入库.png" width="50" height="50" alt=""></span>
+					<div class="mui-media-body">Casing收料</div>
+				</a>
+			</li>
+			<li class="mui-table-view-cell mui-col-xs-3 mui-col-sm-2 iconlist clip" id="casingsending">
+				<a href=ProcNum/ScanOrder.html>
+					<span style="width: 50px;"><img src="出库.png" width="50" height="50" alt=""></span>
+					<div class="mui-media-body">Casing发料</div>
+				</a>
+			</li>
+			<li class="mui-table-view-cell mui-col-xs-3 mui-col-sm-2 iconlist clip" id="exit">
+				<a href=login.html>
+					<span style="width: 50px;"><img src="退出系统.png" width="50" height="50" alt=""></span>
+					<div class="mui-media-body">退出系统</div>
+				</a>
+			</li> -->
+		</ul>
+	</div>
+	<header class="mui-bar foot">
+		V1.0 &nbsp;&nbsp;鸿通 HONOR TONE LIMITED
+		<button id="btnSetting" type="button" class="mui-btn mui-btn-outlined setting"></button>
+	</header>
+	<!-- <audio id="mp3">
+		<source src="../audio/绑库成功.mp3"audio="">
+	</audio> -->
+	<header class="mui-bar stabar" id="btnUserInfo"></header>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/jquery-1.11.1.js"></script>
+	<script type="text/javascript" src="js/moment.min.js"></script>
+	<script type="text/javascript" src="js/git.mes.common.js"></script>
+	<script type="text/javascript" src="js/git.mes.key.js"></script>
+	<script type="text/javascript" src="js/jquery-2.0.0.min.js"></script>
+	<script type="text/javascript" src="js/echarts.min.js"></script>
+	<script type="text/javascript" src="js/bkuiToast.js"></script>
+	<script type="text/javascript">
+		function init() {
+			var node = sessionStorage.getItem("node");
+			sessionStorage.setItem("node","mi");
+			if (node == null) {
+				alert("请先登入");
+				window.location.href = "login.html";
+			}
+		}
+	</script>
+</body>
+
+</html>

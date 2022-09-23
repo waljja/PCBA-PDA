@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title></title>
+	<link href="../css/mui.min.css" rel="stylesheet" />
+	<link href="../css/style.css" rel="stylesheet" />
+</head>
+<style type="text/css">
+	* {
+		margin: 0;
+		padding: 0;
+		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	}
+
+	#resultsstyle {
+		color: rgb(0, 240, 0);
+		font-size: 25px;
+		text-align: center;
+		display: block;
+		padding-top: 3px;
+		padding-left: 25px;
+		padding-right: 25px;
+	}
+
+	.slide-btn {
+		width: 100px;
+		display: inline-block;
+		border: 1px solid;
+		border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+		border-radius: 5px;
+		position: relative;
+		overflow: hidden;
+		cursor: pointer;
+	}
+
+	.slide-btn .inner-on,
+	.slide-btn .inner-off {
+		width: 151px;
+		box-sizing: border-box;
+		display: inline-block;
+		position: relative;
+		left: 0;
+		cursor: pointer;
+		transition: left 0.5s;
+	}
+
+	.inner-on .left,
+	.inner-off .left {
+		width: 50px;
+		color: #fff;
+		text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+		background: #58b058;
+		text-align: center;
+		display: inline-block;
+		padding: 4px 0;
+	}
+
+	.inner-on .space,
+	.inner-off .space {
+		width: 51px;
+		display: inline-block;
+		box-sizing: border-box;
+		padding: 4px 0;
+		color: #fff;
+		background-color: #f5f5f5;
+		border-left: 1px solid #cccccc;
+		border-right: 1px solid #cccccc;
+		text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+		background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
+		border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+	}
+
+	.inner-on .right,
+	.inner-off .right {
+		width: 50px;
+		color: #fff;
+		text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+		background: #f9a123;
+		text-align: center;
+		display: inline-block;
+		padding: 4px 0;
+	}
+</style>
+
+<body onload="init()">
+	<header class="mui-bar mui-bar-nav">
+		<h1 class="mui-title" id="theme"></h1>
+		<img src='../favicon.png' width="50" height="46" alt=''>
+		<div class="slide-btn" style="left:57%; top:-15%">
+			<div class="inner-on" id="inner">
+				<input style="display:none;" type="checkbox" checked>
+				<input style="display:none;" id="status1" type="text" value="true">
+				<span class="left">ON</span><span class="space">&nbsp;</span><span class="right">OFF</span>
+			</div>
+		</div>
+	</header>
+	<div class="mui-content">
+		<div id="module1">交接单：</div>
+		<div id='login-form' class="mui-input-group">
+			<div class="mui-input-row row">
+				<!-- class="mui-input-clear BarCode"  输入居中效果 -->
+				<input id='Receipt' type="text" placeholder="请扫描交接单" autofocus="true">
+			</div>
+		</div>
+		<div id="detailed"></div>
+		<div id="results"></div>
+		<div><samp id="information"></samp></div>
+		<div>
+			<button id='reset' type="button" class="mui-btn mui-btn-block mui-btn-primary">重置</button>
+		</div>
+		<div class="mui-content-padded">
+			<button id='btnBack' type="button" class="mui-btn mui-btn-block mui-btn-primary">返回主页</button>
+		</div>
+	</div>
+	<header class="mui-bar foot">
+		V1.0 &nbsp;&nbsp;鸿通 HONOR TONE LIMITED
+		<button id="btnSetting" type="button" class="mui-btn mui-btn-outlined setting"></button>
+	</header>
+	<audio id="mp3-1">
+		<source src="../audio/收料成功_1.mp3" audio="">
+	</audio>
+	<script src="../js/mui.min.js"></script>
+	<script type="text/javascript" src="../js/jquery-1.11.1.js"></script>
+	<script type="text/javascript" src="../js/moment.min.js"></script>
+	<script type="text/javascript" src="../js/git.mes.common.js"></script>
+	<script type="text/javascript" src="../js/git.mes.key.js"></script>
+	<script type="text/javascript">
+
+		function init() {
+			sessionStorage.removeItem("cumulativeBatch");
+        	sessionStorage.removeItem("cumulativeQyt");
+			//获取登入部门
+			var node = sessionStorage.getItem("node");
+			if (node != null) {
+				$("#theme").html("Casing收料");
+				$("#login-form1").remove();
+			} else {
+				alert("请先登入");
+				window.location.href = "../login.html";
+			}
+		}
+
+		document.getElementById("inner").onclick = function () {
+			if (this.className == "inner-on") {
+				this.style.left = -51 + "px";
+				this.childNodes[1].checked = false;
+				this.className = "inner-off";
+				$("#status1").val("false");
+				alert("离线模式只能盘点期间使用");
+			} else {
+				this.style.left = 0
+				this.childNodes[1].checked = true;
+				this.className = "inner-on";
+				$("#status1").val("true");
+			}
+		}
+		//退回到主页
+		$("#btnBack").click(function () {
+			window.location.href = "../MainMenu1.html"
+		});
+		$("#reset").click(function () {
+			location.reload([true]);
+			// window.location.href = "CasingReceive.html";
+		});
+
+		$('#Receipt').bind('keypress', function (event) {
+			if (event.keyCode == "13") {
+				var pattern = /00000*/;
+				if (!pattern.test($("#Receipt").val())) {
+					alert("请确定交接单是否输入正确!");
+					$("#Receipt").val("");
+					$("#Receipt").focus();
+					return false;
+				}
+				var div = document.getElementById("detailed");
+				var newdiv = document.createElement("div");
+				newdiv.setAttribute("id", "senddata");
+				$.ajax({
+					url: "http://192.168.50.122:8888/api/saploc?",
+					type: 'GET',
+					contentType: "application/json;charset=utf-8",
+					async: true,
+					data: {
+						"Lot": $("#Receipt").val(),
+						"node": "REC",
+						"ProductModel": "",
+						"factory": sessionStorage.getItem("factory")
+					},
+					timeout: 3000,
+					dataType: 'json',
+					success: function (date) {
+						console.log(date);
+						if (date.code == "200") {
+							if (confirm("工单号：" + date.data.wo + "\n物料号：" + date.data.pn + "\n接收仓：" + date.data.recLocation + "\n批    号：" + date.data.batch + "\n数    量：" + date.data.qty + "\n请确认实物数量与交接单数量一致！")) {
+								var c = date.data.batch;
+								var d = date.data.qty;
+								var Receipt = $("#Receipt").val();
+								// var UserName = $("#UserName").val();
+								if (Receipt != "") {
+									$.ajax({
+										url: "http://192.168.50.122:8888/api/insertpcba?",
+										type: 'GET',
+										contentType: "application/json;charset=utf-8",
+										async: true,
+										data: {
+											"Lot": Receipt,
+											"UserName": sessionStorage.getItem("name"),
+											"node": "casing",
+											"Model": $("#status1").val(),
+											"factory": sessionStorage.getItem("factory")
+										},
+										timeout: 3000,
+										dataType: 'json',
+										success: function (date) {
+											console.log(date);
+											if (date.code == "200") {
+												var a = "已收批号:";
+												var b = "累记数量:"
+												document.getElementById('mp3-1').play();
+												$("#resultsstyle").remove();
+												var div = document.getElementById("results");
+												var span = document.createElement("span");
+												span.setAttribute("id", "resultsstyle");
+												span.innerHTML = "交接单:" + Receipt + "收料成功！"
+												div.appendChild(span);
+												$("#Receipt").val("");
+												$("#senddata").remove();
+												$("#Receipt").removeAttr("disabled");
+												if (sessionStorage.getItem("cumulativeBatch") == null) {
+													sessionStorage.setItem("cumulativeBatch", c);
+													a = a + sessionStorage.getItem("cumulativeBatch")
+												} else {
+													sessionStorage.setItem("cumulativeBatch", sessionStorage.getItem("cumulativeBatch") + "/" + c)
+													a = a + sessionStorage.getItem("cumulativeBatch")
+												}
+												if (sessionStorage.getItem("cumulativeQyt") == null) {
+													sessionStorage.setItem("cumulativeQyt", d)
+													b = b + sessionStorage.getItem("cumulativeQyt")
+												} else {
+													sessionStorage.setItem("cumulativeQyt", parseInt(sessionStorage.getItem("cumulativeQyt")) + parseInt(d))
+													b = b + sessionStorage.getItem("cumulativeQyt")
+												}
+												$("#information").html(a+","+b);
+												$("#Receipt").focus();
+											} else {
+												if (date.message == "该Lot号313发板SAP过账不成功，请在外挂系统检查原因！") {
+												if (confirm("该Lot号313发板SAP过账不成功,是否需要重新过账？")) {
+													$.ajax({
+														url: "http://192.168.50.122:8888/api/retryPosting?",
+														type: 'GET',
+														contentType: "application/json;charset=utf-8",
+														async: true,
+														data: {
+															"Lot": Receipt,
+															"Type": "313"
+														},
+														timeout: 3000,
+														dataType: 'json',
+														success: function (date) {
+															$("#Receipt").val("");
+															$("#Receipt").focus();
+														},
+													});
+												} else {
+													$("#Receipt").val("");
+													$("#Receipt").focus();
+												}
+											} else {
+												alert(date.message);
+												$("#Receipt").val("");
+												$("#Receipt").focus();
+											}
+											}
+										},
+										error: function (date) {
+											console.log(date);
+											alert("系统异常!");
+										},
+									});
+								} else {
+									alert("信息不全!");
+								}
+							} else {
+								$("#Receipt").val("");
+								$("#Receipt").focus();
+							}
+						} else {
+							alert(date.message);
+							$("#Receipt").val("");
+						}
+					},
+					error: function (date) {
+						console.log(date);
+						alert("系统异常!");
+					},
+				});
+			}
+		});
+	</script>
+</body>
+
+</html>

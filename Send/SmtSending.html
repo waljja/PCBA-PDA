@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title></title>
+	<link href="../css/mui.min.css" rel="stylesheet" />
+	<link href="../css/style.css" rel="stylesheet" />
+</head>
+<style type="text/css">
+	#selectid {
+		font-size: 18px;
+	}
+
+	#resultsstyle {
+		color: rgb(0, 240, 0);
+		font-size: 25px;
+		text-align: center;
+		display: block;
+		padding-top: 3px;
+		padding-left: 25px;
+		padding-right: 25px;
+	}
+
+	* {
+		margin: 0;
+		padding: 0;
+		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	}
+
+	#resultsstyle {
+		color: rgb(0, 240, 0);
+		font-size: 25px;
+		text-align: center;
+		display: block;
+		padding-top: 3px;
+		padding-left: 25px;
+		padding-right: 25px;
+	}
+
+	.slide-btn {
+		width: 100px;
+		display: inline-block;
+		border: 1px solid;
+		border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+		border-radius: 5px;
+		position: relative;
+		overflow: hidden;
+		cursor: pointer;
+	}
+
+	.slide-btn .inner-on,
+	.slide-btn .inner-off {
+		width: 151px;
+		box-sizing: border-box;
+		display: inline-block;
+		position: relative;
+		left: 0;
+		cursor: pointer;
+		transition: left 0.5s;
+	}
+
+	.inner-on .left,
+	.inner-off .left {
+		width: 50px;
+		color: #fff;
+		text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+		background: #58b058;
+		text-align: center;
+		display: inline-block;
+		padding: 4px 0;
+	}
+
+	.inner-on .space,
+	.inner-off .space {
+		width: 51px;
+		display: inline-block;
+		box-sizing: border-box;
+		padding: 4px 0;
+		color: #fff;
+		background-color: #f5f5f5;
+		border-left: 1px solid #cccccc;
+		border-right: 1px solid #cccccc;
+		text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+		background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
+		border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+	}
+
+	.inner-on .right,
+	.inner-off .right {
+		width: 50px;
+		color: #fff;
+		text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+		background: #f9a123;
+		text-align: center;
+		display: inline-block;
+		padding: 4px 0;
+	}
+</style>
+
+<body onload="init()">
+	<header class="mui-bar mui-bar-nav">
+		<h1 class="mui-title" id="theme"></h1>
+		<img src='../favicon.png' width="50" height="46" alt=''>
+		<div class="slide-btn" style="left:57%; top:-15%">
+			<div class="inner-on" id="inner">
+				<input style="display:none;" type="checkbox" checked>
+				<input style="display:none;" id="status1" type="text" value="true">
+				<span class="left">ON</span><span class="space">&nbsp;</span><span class="right">OFF</span>
+			</div>
+		</div>
+	</header>
+	<div class="mui-content">
+		<!-- style="display:none" -->
+		<div id="smtmode">
+			<div>型号：</div>
+			<div id='login-form' class="mui-input-group" style="width: 100%;float:left;">
+				<div class="mui-input-row row">
+					<input id='ProductModel' type="text" placeholder="请输入型号" autofocus="true">
+				</div>
+			</div>
+			<div id="drop-downbox"></div>
+		</div>
+		<div>交接单：</div>
+		<div id='login-form' class="mui-input-group">
+			<div class="mui-input-row row">
+				<input id='Receipt' type="text" placeholder="请扫描交接单" autofocus="true">
+			</div>
+		</div>
+		<div id="detailed"></div>
+		<div id="results"></div>
+		<div><samp id="information"></samp></div>
+		<div>
+			<button id='reset' type="button" class="mui-btn mui-btn-block mui-btn-primary">重置</button>
+		</div>
+		<div class="mui-content-padded">
+			<button id='btnBack' type="button" class="mui-btn mui-btn-block mui-btn-primary">返回主页</button>
+		</div>
+	</div>
+	<header class="mui-bar foot">
+		V1.0 &nbsp;&nbsp;鸿通 HONOR TONE LIMITED
+		<button id="btnSetting" type="button" class="mui-btn mui-btn-outlined setting"></button>
+	</header>
+	<audio id="mp3">
+		<source src="../audio/发料成功_1.mp3" audio="">
+	</audio>
+	<script src="../js/mui.min.js"></script>
+	<script type="text/javascript" src="../js/jquery-1.11.1.js"></script>
+	<script type="text/javascript" src="../js/moment.min.js"></script>
+	<script type="text/javascript" src="../js/git.mes.common.js"></script>
+	<script type="text/javascript" src="../js/git.mes.key.js"></script>
+	<script type="text/javascript">
+
+		function init() {
+			sessionStorage.removeItem("cumulativeBatch");
+			sessionStorage.removeItem("cumulativeQyt");
+			//获取登入部门
+			var node = sessionStorage.getItem("node");
+			$("#Receipt").attr("disabled", true);
+			$("#UserName").attr("disabled", true);
+			if (node != null) {
+				if (node == "smt") {
+					$("#theme").html("SMT发料");
+					//$("#smtmode").show();
+					$("#ProductModel").focus();
+				} else if (node == "cob") {
+					$("#theme").html("COB发料");
+				} else if (node == "mi") {
+					$("#theme").html("MI发料");
+				} else if (node == "casing") {
+					$("#theme").html("Casing发料");
+				} else if (node == "MiCasing") {
+					$("#theme").html("Mi发料");
+				}
+			} else {
+				alert("请先登入");
+				window.location.href = "../login.html";
+			}
+		}
+
+		document.getElementById("inner").onclick = function () {
+			if (this.className == "inner-on") {
+				this.style.left = -51 + "px";
+				this.childNodes[1].checked = false;
+				this.className = "inner-off";
+				$("#status1").val("false");
+				alert("离线模式只能盘点期间使用");
+			} else {
+				this.style.left = 0
+				this.childNodes[1].checked = true;
+				this.className = "inner-on";
+				$("#status1").val("true");
+			}
+		}
+
+		$("#reset").click(function () {
+			location.reload([true]);
+		});
+
+		$('#ProductModel').bind('keypress', function (event) {
+			if (event.keyCode == "13") {
+				$.ajax({
+					url: "http://localhost:8888/api/fuzzypn?",
+					type: 'GET',
+					contentType: "application/json;charset=utf-8",
+					async: true,
+					data: {
+						"Pn": $("#ProductModel").val(),
+						"node": sessionStorage.getItem("node"),
+						"factory": sessionStorage.getItem("factory")
+					},
+					timeout: 3000,
+					dataType: 'json',
+					success: function (date) {
+						console.log(date);
+						if (date.code == "200") {
+							$("#selectid").remove();
+							var div = document.getElementById("drop-downbox");
+							var select = document.createElement("select");
+							select.setAttribute("id", "selectid");
+							select.onchange = func;
+							let option = "<option value='请选择型号'>请选择型号</option>";
+							for (var key in date.data) {
+								option += "<option id='cputurbocheck' value=" + date.data[key].PartNumber + ">" + date.data[key].PartNumber + "</option>"
+							}
+							select.innerHTML = option;
+							div.appendChild(select);
+						} else {
+							alert(date.message);
+							$("#ProductModel").val("");
+						}
+					},
+					error: function (date) {
+						console.log(date);
+						alert("系统异常!");
+					},
+				});
+			}
+		})
+		function func() {
+			var vs = $('select  option:selected').val();
+			$(ProductModel).val(vs);
+			$.ajax({
+				url: "http://localhost:8888/api/saploc?",
+				type: 'GET',
+				contentType: "application/json;charset=utf-8",
+				async: true,
+				data: {
+					"Lot": "",
+					"node": sessionStorage.getItem("node"),
+					"ProductModel": $("#ProductModel").val(),
+					"factory": sessionStorage.getItem("factory")
+				},
+				timeout: 6000,
+				dataType: 'json',
+				success: function (date) {
+					console.log(date);
+					if (date.code == "500") {
+						alert(date.message);
+						$("#ProductModel").val(date.message.substring(0, 16));
+						$("#Receipt").removeAttr("disabled");
+						$("#ProductModel").attr('disabled', true);
+						$("#selectid").remove();
+						$("#Receipt").focus();
+					} else {
+						alert(date.message);
+						$("#query").val("");
+					}
+				},
+				error: function (date) {
+					console.log(date);
+					alert("系统异常!");
+				},
+			});
+		}
+
+		$('#Receipt').bind('keypress', function (event) {
+			var div = document.getElementById("detailed");
+			var newdiv = document.createElement("div");
+			newdiv.setAttribute("id", "senddata");
+			var Receipt;
+			if (event.keyCode == "13") {
+				var pattern = /00000*/;
+				if (!pattern.test($("#Receipt").val())) {
+					alert("请确定交接单是否输入正确!");
+					$("#Receipt").val("");
+					$("#Receipt").focus();
+					return false;
+				}
+				Receipt = $("#Receipt").val();
+				if (Receipt == "") {
+					return false;
+				}
+				$.ajax({
+					url: "http://localhost:8888/api/saploc?",
+					type: 'GET',
+					contentType: "application/json;charset=utf-8",
+					async: true,
+					data: {
+                        "userID": sessionStorage.getItem("name"),
+						"Lot": Receipt,
+						"node": sessionStorage.getItem("node"),
+						"ProductModel": $("#ProductModel").val(),
+						"factory": sessionStorage.getItem("factory")
+					},
+					timeout: 6000,
+					dataType: 'json',
+					success: function (date) {
+						console.log(date);
+						if (date.code == "200") {
+							if (confirm("工单号：" + date.data.wo + "\n物料号：" + date.data.pn + "\n接收仓：" + date.data.recLocation + "\n批    号：" + date.data.batch + "\n数    量：" + date.data.qty + "\n请确认实物数量与交接单数量一致！")) {
+								var c = date.data.batch;
+								var d = date.data.qty;
+								var Receipt = $("#Receipt").val();
+								if (Receipt != "") {
+									$.ajax({
+										url: "http://localhost:8888/api/sendPcba?",
+										type: 'GET',
+										contentType: "application/json;charset=utf-8",
+										async: true,
+										data: {
+											"Lot": Receipt,
+											"user": sessionStorage.getItem("name"),
+											"node": sessionStorage.getItem("node"),
+											"factory": sessionStorage.getItem("factory"),
+											"Model": $("#status1").val()
+										},
+										timeout: 6000,
+										dataType: 'json',
+										success: function (date) {
+											console.log(date);
+											if (date.code == "200") {
+												var a = "已发批号:";
+												var b = "累记数量:"
+
+												document.getElementById('mp3').play();
+												$("#resultsstyle").remove();
+												var div = document.getElementById("results");
+												var span = document.createElement("span");
+												span.setAttribute("id", "resultsstyle");
+												span.innerHTML = "交接单:" + Receipt + "发料成功！"
+												div.appendChild(span);
+												$("#Receipt").val("");
+												$("#senddata").remove();
+												$("#Receipt").removeAttr("disabled");
+												if (sessionStorage.getItem("cumulativeBatch") == null) {
+													sessionStorage.setItem("cumulativeBatch", c);
+													a = a + sessionStorage.getItem("cumulativeBatch")
+												} else {
+													sessionStorage.setItem("cumulativeBatch", sessionStorage.getItem("cumulativeBatch") + "/" + c)
+													a = a + sessionStorage.getItem("cumulativeBatch")
+												}
+												if (sessionStorage.getItem("cumulativeQyt") == null) {
+													sessionStorage.setItem("cumulativeQyt", d)
+													b = b + sessionStorage.getItem("cumulativeQyt")
+												} else {
+													sessionStorage.setItem("cumulativeQyt", parseInt(sessionStorage.getItem("cumulativeQyt")) + parseInt(d))
+													b = b + sessionStorage.getItem("cumulativeQyt")
+												}
+												$("#information").html(a + "," + b);
+												$("#Receipt").focus();
+											} else {
+												if (date.message == "该Lot号101入库SAP过账不成功，请在外挂系统检查原因！") {
+													if (confirm("该Lot号101入库SAP过账不成功,是否需要重新过账？")) {
+														$.ajax({
+															url: "http://localhost:8888/api/retryPosting?",
+															type: 'GET',
+															contentType: "application/json;charset=utf-8",
+															async: true,
+															data: {
+																"Lot": Receipt,
+																"Type": "101"
+															},
+															timeout: 6000,
+															dataType: 'json',
+															success: function (date) {
+																$("#Receipt").val("");
+																$("#Receipt").focus();
+															},
+														});
+													} else {
+														$("#Receipt").val("");
+														$("#Receipt").focus();
+													}
+												} else {
+													alert(date.message);
+													$("#Receipt").val("");
+													$("#Receipt").focus();
+												}
+											}
+										},
+										error: function (date) {
+											console.log(date);
+											alert("系统异常!sendpcba");
+										},
+									});
+
+								} else {
+									alert("信息不完整!");
+									return false;
+								}
+							} else {
+								$("#Receipt").val("");
+								$("#Receipt").focus();
+							}
+						} else {
+							alert(date.message);
+							$("#Receipt").val("")
+							$("#Receipt").focus();
+						}
+					},
+					error: function (date) {
+						console.log(date);
+						alert("系统异常!saploc");
+					},
+				});
+			}
+		});
+		//退回到主页
+		$("#btnBack").click(function () {
+			window.location.href = "../MainMenu1.html"
+		});
+
+	</script>
+</body>
+
+</html>

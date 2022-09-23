@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title></title>
+	<link href="../css/mui.min.css" rel="stylesheet" />
+	<link href="../css/style.css" rel="stylesheet" />
+</head>
+
+<style type="text/css">
+	#selectid {
+		font-size: 18px;
+	}
+
+	#resultsstyle {
+		color: rgb(0, 240, 0);
+		font-size: 25px;
+		text-align: center;
+		display: block;
+		padding-top: 3px;
+		padding-left: 25px;
+		padding-right: 25px;
+	}
+
+	* {
+		margin: 0;
+		padding: 0;
+		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	}
+
+	#resultsstyle {
+		color: rgb(0, 240, 0);
+		font-size: 25px;
+		text-align: center;
+		display: block;
+		padding-top: 3px;
+		padding-left: 25px;
+		padding-right: 25px;
+	}
+
+	.slide-btn {
+		width: 100px;
+		display: inline-block;
+		border: 1px solid;
+		border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+		border-radius: 5px;
+		position: relative;
+		overflow: hidden;
+		cursor: pointer;
+	}
+
+	.slide-btn .inner-on,
+	.slide-btn .inner-off {
+		width: 151px;
+		box-sizing: border-box;
+		display: inline-block;
+		position: relative;
+		left: 0;
+		cursor: pointer;
+		transition: left 0.5s;
+	}
+
+	.inner-on .left,
+	.inner-off .left {
+		width: 50px;
+		color: #fff;
+		text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+		background: #58b058;
+		text-align: center;
+		display: inline-block;
+		padding: 4px 0;
+	}
+
+	.inner-on .space,
+	.inner-off .space {
+		width: 51px;
+		display: inline-block;
+		box-sizing: border-box;
+		padding: 4px 0;
+		color: #fff;
+		background-color: #f5f5f5;
+		border-left: 1px solid #cccccc;
+		border-right: 1px solid #cccccc;
+		text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+		background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
+		border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+	}
+
+	.inner-on .right,
+	.inner-off .right {
+		width: 50px;
+		color: #fff;
+		text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+		background: #f9a123;
+		text-align: center;
+		display: inline-block;
+		padding: 4px 0;
+	}
+</style>
+
+<body onload="init()">
+	<header class="mui-bar mui-bar-nav">
+		<h1 class="mui-title" id="theme"></h1>
+		<img src='../favicon.png' width="50" height="46" alt=''>
+	</header>
+	<div class="mui-content">
+		<div id="permissions">
+			<div>账号：</div>
+			<div id='login-form' class="mui-input-group" style="width: 100%;float:left;">
+				<div class="mui-input-row row">
+					<input id='userID' type="text" placeholder="请输入账号名" autofocus="true">
+				</div>
+			</div>
+            <div>权限：</div>
+			<div class="mui-input-group" style="width: 100%;float:left;">
+				<div class="mui-input-row row">
+					<input id='permissions1' type="text" placeholder="请输入要移除的权限" autofocus="true">
+				</div>
+			</div>
+			<div id="permissionsInfo" style="margin-top: 10%"></div>
+		</div>
+		<div id="detailed"></div>
+		<div id="results"></div>
+		<div><samp id="information"></samp></div>
+        <div>
+			<button id='find' type="button" class="mui-btn mui-btn-block mui-btn-primary">查找</button>
+		</div>
+        <div>
+			<button id='remove' type="button" class="mui-btn mui-btn-block mui-btn-primary">移除</button>
+		</div>
+		</div>
+		<div>
+			<button id='reset' type="button" class="mui-btn mui-btn-block mui-btn-primary">重置</button>
+		</div>
+		<div class="mui-content-padded">
+			<button id='btnBack' type="button" class="mui-btn mui-btn-block mui-btn-primary">返回</button>
+		</div>
+	</div>
+	<header class="mui-bar foot">
+		V1.0 &nbsp;&nbsp;鸿通 HONOR TONE LIMITED
+		<button id="btnSetting" type="button" class="mui-btn mui-btn-outlined setting"></button>
+	</header>
+	<script src="../js/mui.min.js"></script>
+	<script type="text/javascript" src="../js/jquery-1.11.1.js"></script>
+	<script type="text/javascript" src="../js/moment.min.js"></script>
+	<script type="text/javascript" src="../js/git.mes.common.js"></script>
+	<script type="text/javascript" src="../js/git.mes.key.js"></script>
+	<script type="text/javascript">
+
+		function init() {
+			//获取登入部门
+			var node = sessionStorage.getItem("node");
+			if (node != null) {
+				$("#theme").html("权限查找")
+			} else {
+				alert("请先登入");
+				window.location.href = "../login.html";
+			}
+		}
+
+        //重置事件
+		$("#reset").click(function () {
+			location.reload([true]);
+		});
+        
+        //账号输入框回车查找权限
+		$('#userID').bind('keypress', function (event) {
+			if (event.keyCode == "13") {
+				if ($("#account").val() == "") {
+				    alert("请输入账号");
+
+				    return false;
+			    }
+
+                var div = document.getElementById("permissionsInfo")
+
+                //调用权限更新接口
+                $.ajax({
+				    url: "http://localhost:8888/api/permissions/find?",
+				    type: 'get',
+                    contentType: "application/json;charset=utf-8",
+                    async: true,
+                    data: {
+                        userID: $("#userID").val()
+                    },
+                    timeout: 3000,
+                    dataType: 'json',
+                    success: function (date) {
+                        if (date.code == "104") {
+                            console.log(date.permissionName)
+                            let permissions = "<option>" + date.permissionName + "</option>" //显示权限
+                            div.innerHTML = permissions
+                        } else {
+                            alert(date.msg)
+                        }
+                    },
+                    error: function (xhr) {
+                        console.log(xhr);
+                        alert("系统异常!");
+                    },
+			    });
+			}
+		});
+
+        //权限输入框回车更新权限
+		$('#permissions').bind('keypress', function (event) {
+			if (event.keyCode == "13") {
+				if ($("#account").val() === "") {
+				    alert("请输入账号");
+				    return false;
+			    }
+                
+                if ($("#permissions1").val() === "") {
+				    alert("请输入要移除的权限");
+
+				    return false;
+			    }else {
+                    var permissionsStr = $("#permissions1").val()
+                    var newPermissions = $("#permissions1").val().split(",")
+                    var permissionName = sessionStorage.getItem("permissionName")
+                    var div = document.getElementById("permissionsInfo")
+
+                    for(var i = 0; i < newPermissions.length; i++) {//判断该员工是否有此权限
+                        if(permissionName.indexOf(newPermissions[i]) === -1) {
+                            alert("请勿输入该员工没有的权限！")
+
+                            return false;
+                        }                 
+                    }
+
+                    var permissionsStr1 = sessionStorage.getItem("permissionName").replace(permissionsStr+",","")//将权限字符串的需要移除的替换成空
+                    console.log(permissionsStr1)
+                    
+                    $.ajax({
+                        url: "http://localhost:8888/api/permissions/update?",
+                        type: 'get',
+                        contentType: "application/json;charset=utf-8",
+                        async: true,
+                        data: {
+                            userID: $("#userID").val(),
+                            permissions: permissionsStr1
+                        },
+                        timeout: 3000,
+                        dataType: 'json',
+                        success: function (date) {
+                            if (date.code == "110") {
+                                console.log(date.permissionName)
+                                let permissions = "<option>" + date.permissionName + "</option>" //显示权限
+                                div.innerHTML = permissions
+                            } else {
+                                alert(date.msg)
+                            }
+                        },
+                        error: function (xhr) {
+                            console.log(xhr);
+                            alert("系统异常!");
+                        },
+                    });
+                }
+
+			}
+		});
+
+        //移除按钮事件
+        $("#remove").click(function () {
+			if ($("#account").val() === "") {
+				alert("请输入账号");
+
+				return false;
+			}
+                
+            if ($("#permissions1").val() === "") {
+				alert("请输入要移除的权限");
+
+				return false;
+			}else {
+                var permissionsStr = $("#permissions1").val()
+                var newPermissions = $("#permissions1").val().split(",")
+                var permissionName = sessionStorage.getItem("permissionName")
+                var div = document.getElementById("permissionsInfo")
+
+                for(var i = 0; i < newPermissions.length; i++) {//判断该员工是否有此权限
+                    if(permissionName.indexOf(newPermissions[i]) === -1) {
+                        alert("请勿输入该员工没有的权限！")
+
+                        return false;
+                    }                 
+                }
+
+                var permissionsStr1 = sessionStorage.getItem("permissionName").replace(permissionsStr+",","")//将权限字符串的需要移除的替换成空
+
+                $.ajax({
+                    url: "http://localhost:8888/api/permissions/update?",
+                    type: 'get',
+                    contentType: "application/json;charset=utf-8",
+                    async: true,
+                    data: {
+                        userID: $("#userID").val(),
+                        permissions: permissionsStr1
+                    },
+                    timeout: 3000,
+                    dataType: 'json',
+                    success: function (date) {
+                        if (date.code == "110") {
+                            console.log(date.permissionName)
+                            let permissions = "<option>" + date.permissionName + "</option>" //显示权限
+                            div.innerHTML = permissions
+                        } else {
+                            alert(date.msg)
+                        }
+                    },
+                    error: function (xhr) {
+                        console.log(xhr);
+                        alert("系统异常!");
+                    },
+                });
+            }
+		});
+
+        //点击查找事件
+        $("#find").click(function () {
+			if ($("#account").val() == "") {
+				 alert("请输入账号");
+				return false;
+			}
+
+            var div = document.getElementById("permissionsInfo")
+
+            $.ajax({
+				url: "http://localhost:8888/api/permissions/find?",
+				type: 'get',
+                contentType: "application/json;charset=utf-8",
+                async: true,
+                data: {
+                    userID: $("#userID").val()
+                },
+                timeout: 3000,
+                dataType: 'json',
+                success: function (date) {
+                    if (date.code == "104") {
+                        console.log(date.permissionName)
+                        sessionStorage.setItem("permissionName",date.permissionName)
+                        let permissions = "<option>" + date.permissionName + "</option>" //显示权限
+                        div.innerHTML = permissions
+                    } else {
+                        alert(date.msg)
+                    }
+                },
+                error: function (xhr) {
+                    console.log(xhr);
+                    alert("系统异常!");
+                },
+			});
+		});
+
+		//返回到权限管理页面
+		$("#btnBack").click(function () {
+				window.location.href = "permissionsChange.html"
+		});
+
+	</script>
+</body>
+
+</html>

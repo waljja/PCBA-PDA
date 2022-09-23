@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html class="ui-page-login" xmlns:th="http://www.thymeleaf.org" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title></title>
+	<link href="css/mui.min.css" rel="stylesheet" />
+	<link href="css/style.css" rel="stylesheet" />
+</head>
+<style type="text/css">
+	#logmeg {
+		width: 50%;
+		color: rgb(228, 7, 7);
+		display: inline-block;
+	}
+</style>
+
+<body onload="init()">
+	<header class="mui-bar mui-bar-nav">
+		<h1 class="mui-title">登录</h1>
+		<img src='favicon.png' width="50" height="46" alt=''>
+	</header>
+	<div class="mui-content logincontainer">
+		<div id='login-form' class="mui-input-group login">
+			<div class="mui-input-row row">
+				<label>用户</label>
+				<input id='account' value="" type="text" class="mui-input-clear mui-input rowinput" autofocus="true"
+					placeholder="请输入账号">
+			</div>
+			<div class="mui-input-row row">
+				<label>密码</label>
+				<input id='password' type="password" value="" class="mui-input-clear mui-input rowinput"
+					autofocus="true" placeholder="请输入密码">
+			</div>
+		</div>
+		<div class="mui-content-padded">
+			<button id='login' type="button" class="mui-btn mui-btn-block mui-btn-primary">登录</button>
+			<!-- <button id='scan' type="button" class="mui-btn mui-btn-block mui-btn-success">扫描登录</button> -->
+		</div>
+		<div class="mui-content-padded">
+			<button id='reset' type="button" class="mui-btn mui-btn-block mui-btn-primary">重置</button>
+		</div>
+	</div>
+
+	<header class="mui-bar foot">
+		V1.0 &nbsp;&nbsp;鸿通 HONOR TONE LIMITED
+		<button id="btnSetting" type="button" class="mui-btn mui-btn-outlined setting"></button>
+	</header>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/jquery-1.11.1.js"></script>
+	<script type="text/javascript" src="js/moment.min.js"></script>
+	<script type="text/javascript" src="js/git.mes.common.js"></script>
+	<script type="text/javascript" src="js/git.mes.key.js"></script>
+	<script type="text/javascript">
+
+		function init() {
+			//var a =document.getElementById("UserName").value;;
+			//alert("加载login:init");
+			//alert(a);
+			
+		}
+
+		$("#reset").click(function () {
+			 location.reload([true]);
+			//  window.location.href =
+		});
+
+		//网页内按下回车触发
+		document.onkeydown = function () {
+			if (window.event && window.event.keyCode == 13) {
+				$("#login").click();
+			}
+		}
+
+		$("#login").click(function () {
+			if ($("#account").val() == "") {
+				alert("请输入账号");
+				return false;
+			} else if ($("#password").val() == "") {
+				$("#password").focus();
+				return false;
+			}
+			var div = document.getElementById("login-form")
+			var newdiv = document.createElement("div")
+			var date = {  account: $("#account").val(), password: $("#password").val() }
+			//<!---------------------------------------------------------------------------add by zhangyue on 2020-12-11---------------------------------------------------------------------------------->         
+			$.ajax({
+				headers: {
+					Accept: "application/json; charset=utf-8",
+					'token': '9B4BF951093F1F1A40BB2DAAA30B3838',
+				},
+				url: "http://192.168.50.122:8888/api/login?",
+				type: 'post',
+				contentType: "application/json;charset=utf-8",
+				async: true,
+				data: JSON.stringify(date),
+				timeout: 3000,
+				dataType: 'json',
+				success: function (date) {
+					//Object.keys(date).length;
+					if (date.code == "200") {
+						console.log("date",date);
+						console.log("date",date.permissions);
+						//sessionStorage.setItem("name", $("#account").val());
+						sessionStorage.setItem("permissions", date.permissions);
+						sessionStorage.setItem("name", date.name);
+						sessionStorage.setItem("factory", date.message);
+						sessionStorage.setItem("node", date.node);
+						// if(date.node == "MiCasing"){
+							window.location.href = "MainMenu1.html";
+						// }else{
+						//	window.location.href = "main.html";
+						// }
+						
+					} else {
+						$("#password").val("");
+						$("#logmeg").remove();
+						//登入失败!账号或密码错误!
+						newdiv.innerHTML =
+							"<div>" +
+							"<p id='logmeg'>登入失败!账号或密码错误!</p>" +
+							"</div>";
+						div.appendChild(newdiv);
+					}
+				},
+				error: function (xhr) {
+					console.log(xhr);
+					alert("系统异常!");
+				},
+			});
+		});
+	</script>
+</body>
+
+</html>
